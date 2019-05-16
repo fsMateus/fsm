@@ -313,10 +313,11 @@ def main_test(n_var, minterms):
     #n_var = int(input("Enter the number of variables(bits): "))
     #get the minterms as input
     #minterms = input("Enter the minterms (ex. 0 1 2 5 9 10) : ")
-    a = minterms.split(',')
+    a = minterms
+    #print(a)
     #put the numbers in list in int form
     #a = map(int, a)
-    a = [int(elem) for elem in a]
+    #a = [int(elem) for elem in a]
 
     #make a group list
     group = [[] for x in range(n_var+1)]
