@@ -3,7 +3,8 @@ import tcc
 import math
 import random
 import time
-
+import os
+import multiprocessing as mp
 
 class Individuo():
     def __init__(self, geracao=0):
@@ -165,13 +166,22 @@ class AlgoritimoGenetico():
 
         return pai
 
+    def executarParalelo(self, populacao, entradas):
+        processos = []
+        for i in range(len(populacao)):
+            p = mp.Process(target=populacao[i].avaliacao(populacao[i].template, entradas))
+            p.start()
+            processos.append(p)
+
+        for p in processos:
+            p.join()
+
     def resolver(self, numero_geracoes, taxa_mutacao, entradas):
         #print(entradas)
         self.inicializa_populacao()
         self.preenche_template()
 
-        for i in range(len(self.populacao)):
-            self.populacao[i].avaliacao(self.populacao[i].template, entradas)
+        self.executarParalelo(self.populacao, entradas)
 
         self.ordena_populacao()
         self.melhor_solucao = self.populacao[0]
@@ -181,7 +191,7 @@ class AlgoritimoGenetico():
         taxa_cruzamento = int(0.4 * self.tamanho_populacao)
 
         for geracao in range(numero_geracoes):
-
+            # self.processo(taxa_cruzamento, taxa_mutacao)
             soma_avaliacao = self.soma_avaliacoes()
             nova_populacao = []
 
@@ -192,7 +202,7 @@ class AlgoritimoGenetico():
                 if pai1 == pai2:
                     pai2 = self.seleciona_pai(soma_avaliacao)
 
-                #print('p1', pai1, 'p2', pai2)
+                # print('p1', pai1, 'p2', pai2)
 
                 filhos = self.populacao[pai1].crossover(self.populacao[pai2])
 
@@ -211,8 +221,7 @@ class AlgoritimoGenetico():
             self.populacao = list(nova_populacao)
             self.preenche_template()
 
-            for i in range(len(self.populacao)):
-                self.populacao[i].avaliacao(self.populacao[i].template, entradas)
+            self.executarParalelo(self.populacao, entradas)
 
             self.ordena_populacao()
 
@@ -222,13 +231,14 @@ class AlgoritimoGenetico():
             self.calcula_proporcao()
             self.melhor_individuo(melhor)
 
-            #print(cont)
-            #if cont > 5:
-                #print('criterio de parada')
-                #break
+            # print(cont)
+            # if cont > 5:
+            # print('criterio de parada')
+            # break
 
-            arq = open('teste.txt', 'a')
-            texto = str(melhor.cromossomo) + ' - ' + str(melhor.nota_avaliacao) + ' - ' + str(melhor.qtd_termos) + ' - ' + str(melhor.expressao) + '\n'
+            arq = open('teste2.txt', 'a')
+            texto = str(melhor.cromossomo) + ' - ' + str(melhor.nota_avaliacao) + ' - ' + str(
+                melhor.qtd_termos) + ' - ' + str(melhor.expressao) + '\n'
             arq.write(texto)
             arq.close()
 
@@ -237,7 +247,7 @@ class AlgoritimoGenetico():
 
 
 if __name__ == '__main__':
-    arq = open('kiss2/bbara.kiss2', 'r')
+    arq = open('kiss2/bbtas.kiss2', 'r')
     lista = arq.readlines()
     qtd_estados = int(lista[4].split()[1])
     bitout = int(lista[2].split()[1])
