@@ -41,6 +41,8 @@ def gerar_individuo(lista, tabela, mapa):
     for j in range(len(tabela)):
         if tabela[j][1] not in aux:
             aux.append(tabela[j][1])
+        if tabela[j][3] not in aux:
+            aux.append(tabela[j][3])
     individuo.append(aux)
 
     l = []
@@ -83,7 +85,6 @@ def preencher_template(lista, template, individuo):
     qtd_estados = int(lista[4].split()[1])
     bits = math.ceil(math.log2(qtd_estados))
     # print(individuo)
-    #print(individuo[1][2])
     for i in range(linhas - 5):
         for j in range(2, 5, 2):
             for y in range(qtd_estados):

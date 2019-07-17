@@ -166,22 +166,25 @@ class AlgoritimoGenetico():
 
         return pai
 
-    def executarParalelo(self, populacao, entradas):
-        processos = []
-        for i in range(len(populacao)):
-            p = mp.Process(target=populacao[i].avaliacao(populacao[i].template, entradas))
-            p.start()
-            processos.append(p)
-
-        for p in processos:
-            p.join()
+    # def executarParalelo(self, populacao, entradas):
+    #     processos = []
+    #     for i in range(len(populacao)):
+    #         p = mp.Process(target=populacao[i].avaliacao(populacao[i].template, entradas))
+    #         p.start()
+    #         processos.append(p)
+    #
+    #     for p in processos:
+    #         p.join()
 
     def resolver(self, numero_geracoes, taxa_mutacao, entradas):
         #print(entradas)
         self.inicializa_populacao()
         self.preenche_template()
 
-        self.executarParalelo(self.populacao, entradas)
+        # self.executarParalelo(self.populacao, entradas)
+        print('populacao inicial: ', len(self.populacao))
+        for i in range(len(self.populacao)):
+            self.populacao[i].avaliacao(self.populacao[i].template, entradas)
 
         self.ordena_populacao()
         self.melhor_solucao = self.populacao[0]
@@ -212,6 +215,7 @@ class AlgoritimoGenetico():
                     else:
                         nova_populacao.append(filhos[i].troca())
 
+            print('Tamanho da populacao gerada: ', len(nova_populacao))
             for i in range(len(nova_populacao)):
                 aux = random.choice(self.populacao)
                 self.populacao.remove(aux)
@@ -219,9 +223,12 @@ class AlgoritimoGenetico():
             nova_populacao.extend(self.populacao)
 
             self.populacao = list(nova_populacao)
+            print('Populacao misturada: ', len(self.populacao))
             self.preenche_template()
 
-            self.executarParalelo(self.populacao, entradas)
+            # self.executarParalelo(self.populacao, entradas)
+            for i in range(len(self.populacao)):
+                self.populacao[i].avaliacao(self.populacao[i].template, entradas)
 
             self.ordena_populacao()
 
@@ -236,11 +243,17 @@ class AlgoritimoGenetico():
             # print('criterio de parada')
             # break
 
-            arq = open('teste2.txt', 'a')
-            texto = str(melhor.cromossomo) + ' - ' + str(melhor.nota_avaliacao) + ' - ' + str(
-                melhor.qtd_termos) + ' - ' + str(melhor.expressao) + '\n'
-            arq.write(texto)
-            arq.close()
+            # arq = open('resultados/tav5.txt', 'a')
+            # arq_custo = open('custos/tav5.txt', 'a')
+            # arq_termo = open('termos/tav5.txt', 'a')
+            # texto = str(melhor.cromossomo) + ' - ' + str(melhor.nota_avaliacao) + ' - ' + str(
+            #     melhor.qtd_termos) + ' - ' + str(melhor.expressao) + '\n'
+            # arq.write(texto)
+            # arq_custo.write(str(melhor.nota_avaliacao) + '\n')
+            # arq_termo.write(str(melhor.qtd_termos) + '\n')
+            # arq.close()
+            # arq_custo.close()
+            # arq_termo.close()
 
         print(self.melhor_solucao.geracao)
         return self.melhor_solucao.cromossomo, self.melhor_solucao.nota_avaliacao, self.melhor_solucao.qtd_termos
@@ -401,7 +414,7 @@ if __name__ == '__main__':
     ag = AlgoritimoGenetico(tamanho_populacao)
 
     inicio = time.time()
-    resp, cust, termos = ag.resolver(500, taxa_mutacao, entradas)
+    resp, cust, termos = ag.resolver(50, taxa_mutacao, entradas)
     fim = time.time()
     temp = fim - inicio
 
